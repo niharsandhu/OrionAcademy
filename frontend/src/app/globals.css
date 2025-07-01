@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  :root {
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+    --color-chrome: 0 100% 50%;
+  }
+  .dark {
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+/* 3D Text Effect */
+.style-text {
+  text-shadow: 
+    2px 2px 0px #666,
+    4px 4px 0px #555,
+    6px 6px 0px #444,
+    8px 8px 0px #333,
+    10px 10px 0px #222;
+  transform: perspective(500px) rotateX(10deg);
+  transform-origin: center;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+.bg-space {
+  background: white;
+}
+
+/* Animation Keyframes */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.float {
+  animation: float 6s ease-in-out infinite;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.juice {
+  position: absolute;
+  z-index: 1;
+}
+
+.juice img {
+  animation: float 4s ease-in-out infinite;
+}
+
+
+@keyframes float {
+  0% {
+    transform: translate(-50%, -46%);
+  }
+  50% {
+    transform: translate(-50%, -54%);
+  }
+  100% {
+    transform: translate(-50%, -46%);
+  }
+}
+
+.leaves .layer {
+  position: absolute !important;
+}
+
+.leaves .layer:nth-child(1) {
+  top: 150px !important;
+  left: 1250px !important;
+}
+
+.leaves .layer:nth-child(2) {
+  top: 500px !important;
+  left: 700px !important;
+}
+
+.leaves .layer:nth-child(3) {
+  top: 60px !important;
+  left: 300px !important;
+}
+
+.leaves .layer:nth-child(4) {
+  top: 250px !important;
+  left: 120px !important;
+  
+}
+
+.leaves .layer:nth-child(5) {
+  top: 750px !important;
+  left: 1040px !important;
+}
+
+#toast-container {
+  z-index: 9999 !important;
+}
