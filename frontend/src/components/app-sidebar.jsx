@@ -24,62 +24,86 @@ import {
 
 export function AppSidebar({ ...props }) {
   const pathname = usePathname();
-  const [user, setUser] = React.useState({ name: "", email: "", avatar: "/avatars/default.jpg" });
+  const [user, setUser] = React.useState({
+    name: "",
+    email: "",
+    avatar: "/avatars/default.jpg",
+  });
 
+  // Safe localStorage access
   React.useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (error) {
+          console.error("Error parsing user data:", error);
+        }
+      }
     }
   }, []);
 
-  const isTeacherPage = ["/teacher", "/studentList", "/qrcode", "/uploadAttendance", "/createEvent"].some((path) =>
-    pathname.endsWith(path)
-  );
+  // Determine if current page is for teacher
+  const isTeacherPage = [
+    "/teacher",
+    "/studentList",
+    "/qrcode",
+    "/uploadAttendance",
+    "/createEvent",
+  ].some((path) => pathname.endsWith(path));
 
-  const navMain = isTeacherPage
-    ? [
-        { title: "Student List", url: "studentList", icon: Users },
-        { title: "QR Code", url: "qrcode", icon: QrCode },
-        { title: "Upload Attendance", url: "uploadAttendance", icon: Upload },
-        { title: "Create Event", url: "createEvent", icon: Calendar },
-      ]
-    : [
+  // Navigation items
+  const navMain = React.useMemo(() => {
+    if (isTeacherPage) {
+      return [
+        { title: "Student List", url: "/studentList", icon: Users },
+        { title: "QR Code", url: "/qrcode", icon: QrCode },
+        { title: "Upload Attendance", url: "/uploadAttendance", icon: Upload },
+        { title: "Create Event", url: "/createEvent", icon: Calendar },
+      ];
+    } else {
+      return [
         {
           title: "Attendance",
-          url: "attendance",
+          url: "/attendance",
           icon: SquareTerminal,
-          isActive: true,
+          isActive: pathname.startsWith("/attendance"),
           items: [
-            { title: "History", url: "#" },
-            { title: "Starred", url: "#" },
-            { title: "Settings", url: "#" },
+            { title: "History", url: "/attendance/history" },
+            { title: "Starred", url: "/attendance/starred" },
+            { title: "Settings", url: "/attendance/settings" },
           ],
         },
         {
           title: "Events",
-          url: "event",
+          url: "/event",
           icon: BookOpen,
           items: [
-            { title: "Introduction", url: "#" },
-            { title: "Get Started", url: "#" },
-            { title: "Tutorials", url: "#" },
-            { title: "Changelog", url: "#" },
+            { title: "Introduction", url: "/event/introduction" },
+            { title: "Get Started", url: "/event/get-started" },
+            { title: "Tutorials", url: "/event/tutorials" },
+            { title: "Changelog", url: "/event/changelog" },
           ],
         },
       ];
+    }
+  }, [isTeacherPage, pathname]);
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarTrigger />
       </SidebarHeader>
+
       <SidebarContent>
         <NavMain items={navMain} />
       </SidebarContent>
+
       <SidebarFooter>
         <NavUser user={user} />
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );

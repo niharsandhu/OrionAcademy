@@ -1,6 +1,6 @@
-import ContactForm from "@/components/contact-form"
-import { Meteors } from "@/components/meteors"
-import NavBar from "@/components/NavBar"
+import ContactForm from "@/components/contact-form";
+import { Meteors } from "@/components/meteors";
+import NavBar from "@/components/NavBar";
 
 export default function ContactPage() {
   return (
@@ -18,7 +18,7 @@ export default function ContactPage() {
               Contact Nova Academy
             </h1>
             <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto">
-              Have questions about your journey to the stars? We're here to help guide your path to success.
+              Have questions about your journey to the stars? We&apos;re here to help guide your path to success.
             </p>
           </div>
 
@@ -86,7 +86,5 @@ export default function ContactPage() {
         <Meteors />
       </div>
     </>
-
-  )
+  );
 }
-

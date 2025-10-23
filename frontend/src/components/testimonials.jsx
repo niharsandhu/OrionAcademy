@@ -1,9 +1,9 @@
-import { Star } from "lucide-react"
+import { Star } from "lucide-react";
 
 export default function TestimonialsSection() {
   return (
     <section className="w-full py-12 md:py-24 bg-black text-white border-4 border-white rounded-2xl">
-      <div className=" px-4 md:px-6">
+      <div className="px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Mission Reports</h2>
@@ -29,8 +29,7 @@ export default function TestimonialsSection() {
             {
               name: "Star Navigator",
               year: "Third Year",
-              quote:
-                "From attendance to assignments, everything is just a click away. It's like having mission control in my pocket!",
+              quote: "From attendance to assignments, everything is just a click away. It&apos;s like having mission control in my pocket!",
               rating: 5,
             },
           ].map((testimonial, index) => (
@@ -45,7 +44,8 @@ export default function TestimonialsSection() {
                     <Star key={i} className="w-5 h-5 fill-current" />
                   ))}
               </div>
-              <p className="flex-1 text-gray-400">"{testimonial.quote}"</p>
+              {/* Removed raw quotes around the text */}
+              <p className="flex-1 text-gray-400">{testimonial.quote}</p>
               <div>
                 <div className="font-bold">{testimonial.name}</div>
                 <div className="text-sm text-gray-400">{testimonial.year}</div>
@@ -55,6 +55,5 @@ export default function TestimonialsSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
-

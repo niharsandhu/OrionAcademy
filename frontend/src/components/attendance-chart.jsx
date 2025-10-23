@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { TrendingUp } from "lucide-react";
 import { LabelList, RadialBar, RadialBarChart } from "recharts";
@@ -18,10 +19,20 @@ import {
 
 const AttendanceChart = () => {
   const [attendanceData, setAttendanceData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Only run on client
+    if (typeof window === "undefined") return;
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("No token found. Attendance data will not load.");
+      setLoading(false);
+      return;
+    }
+
     const fetchAttendance = async () => {
-      const token = localStorage.getItem("token");
       try {
         const response = await fetch("http://localhost:3001/students/dashboard", {
           method: "GET",
@@ -38,6 +49,8 @@ const AttendanceChart = () => {
         setAttendanceData(data.attendance || []);
       } catch (error) {
         console.error("Error fetching attendance:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -52,8 +65,10 @@ const AttendanceChart = () => {
 
     return data.map((item, index) => ({
       course: item.courseName,
-      attendance: maxAttendance ? Math.round((item.attendancePercentage / maxAttendance) * 100) : 0,
-      fill: ["#34D399", "#FACC15", "#F97316", "#EF4444", "#6366F1"][index % 5], // Assign different colors
+      attendance: maxAttendance
+        ? Math.round((item.attendancePercentage / maxAttendance) * 100)
+        : 0,
+      fill: ["#34D399", "#FACC15", "#F97316", "#EF4444", "#6366F1"][index % 5],
     }));
   };
 
@@ -62,12 +77,18 @@ const AttendanceChart = () => {
   return (
     <Card className="flex flex-col bg-zinc-900 border-zinc-800 shadow-lg rounded-2xl">
       <CardHeader className="flex flex-col items-center pb-4">
-        <CardTitle className="text-md text-white font-semibold tracking-wide">Attendance Overview</CardTitle>
-        <CardDescription className="text-zinc-400">January - June 2025</CardDescription>
+        <CardTitle className="text-md text-white font-semibold tracking-wide">
+          Attendance Overview
+        </CardTitle>
+        <CardDescription className="text-zinc-400">
+          January - June 2025
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="flex justify-center items-center py-2">
-        {chartData.length > 0 ? (
+        {loading ? (
+          <p className="text-center text-zinc-400">Loading attendance data...</p>
+        ) : chartData.length > 0 ? (
           <ChartContainer className="mx-auto aspect-square min-w-[220px] min-h-[220px]">
             <RadialBarChart
               width={260}

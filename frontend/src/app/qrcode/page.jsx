@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import toast from "react-hot-toast";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -9,10 +10,12 @@ const QRScanner = () => {
   const [token, setToken] = useState(null);
   const [qrData, setQRData] = useState(null);
   const [error, setError] = useState(null);
-  const [scanner, setScanner] = useState(null);
   const [scanning, setScanning] = useState(false);
   const [isDataSent, setIsDataSent] = useState(false);
 
+  const scannerRef = useRef(null);
+
+  // Fetch token once
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
@@ -22,29 +25,11 @@ const QRScanner = () => {
     }
   }, []);
 
-  useEffect(() => {
-    if (scanning) {
-      const newScanner = new Html5QrcodeScanner("reader", { fps: 5, qrbox: 300 });
-      newScanner.render(
-        (decodedText) => {
-          console.log("Scanned QR Data:", decodedText);
-          handleScan(decodedText);
-        },
-        (err) => {
-          console.error("QR Scanner Error:", err);
-          setError("Error scanning QR code");
-        }
-      );
-      setScanner(newScanner);
-    } else {
-      if (scanner) {
-        scanner.clear();
-      }
-    }
-  }, [scanning]);
+  // Handle QR scan
+  const handleScan = useCallback(
+    (data) => {
+      if (!data || isDataSent) return;
 
-  const handleScan = (data) => {
-    if (data && !isDataSent) {
       const extractedData = extractQRData(data);
       if (extractedData) {
         setQRData(extractedData);
@@ -53,18 +38,19 @@ const QRScanner = () => {
       } else {
         setError("Invalid QR code format");
       }
-    }
-  };
+    },
+    [isDataSent, token] // dependencies
+  );
 
   const extractQRData = (data) => {
     const match = data.match(/Roll No:\s*(\d+),\s*Event:\s*([\w\s]+)/);
-    if (match) {
-      return { qrData: `${match[1]}, ${match[2].trim()}` };
-    }
+    if (match) return { qrData: `${match[1]}, ${match[2].trim()}` };
     return null;
   };
 
   const sendQRDataToAPI = async (qrData) => {
+    if (!token) return;
+
     try {
       const response = await fetch("http://localhost:3000/attendance/qr-code", {
         method: "POST",
@@ -76,10 +62,11 @@ const QRScanner = () => {
       });
 
       if (!response.ok) throw new Error("Failed to send QR data");
+
       toast.success("QR data sent successfully!");
-      setScanning(false);
-    } catch (error) {
-      console.error("Error sending QR data:", error.message);
+      stopScanning();
+    } catch (err) {
+      console.error("Error sending QR data:", err.message);
       setError("Failed to send QR data");
     } finally {
       cleanQRData();
@@ -91,15 +78,26 @@ const QRScanner = () => {
     setIsDataSent(false);
   };
 
-  const startScanning = () => {
-    setScanning(true);
-    setIsDataSent(false);
-  };
+  // Start / stop scanning
+  const startScanning = () => setScanning(true);
+  const stopScanning = () => setScanning(false);
 
-  const stopScanning = () => {
-    setScanning(false);
-    setIsDataSent(false);
-  };
+  // Initialize / clear scanner
+  useEffect(() => {
+    if (scanning) {
+      scannerRef.current = new Html5QrcodeScanner("reader", { fps: 5, qrbox: 300 });
+      scannerRef.current.render(
+        handleScan,
+        (err) => console.error("QR Scanner Error:", err)
+      );
+    } else {
+      scannerRef.current?.clear();
+    }
+
+    return () => {
+      scannerRef.current?.clear();
+    };
+  }, [scanning, handleScan]);
 
   return (
     <div className="w-full max-w-md p-5 bg-zinc-900 border border-zinc-800 shadow-lg rounded-lg text-white">

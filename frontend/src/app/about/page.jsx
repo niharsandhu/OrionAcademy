@@ -1,16 +1,16 @@
-import { TracingBeamDemo } from "@/components/tracing-brea"
-import NavBar from "@/components/NavBar"
-import { RocketIcon as RocketLaunch, Target, Users, Building2, Award, Lightbulb } from "lucide-react"
-import Image from "next/image"
-import Footer from "@/components/Footer"
+import { TracingBeamDemo } from "@/components/tracing-brea";
+import NavBar from "@/components/NavBar";
+import { RocketIcon as RocketLaunch, Target, Users, Building2, Award, Lightbulb } from "lucide-react";
+import Image from "next/image";
+import Footer from "@/components/Footer";
 import { Cover } from "@/components/ui/cover";
-import Link from "next/link"
+import Link from "next/link";
 
 export default function AboutPage() {
   return (
     <>
       <NavBar />
-      <div className="min-h-screen bg-black text-white mx-12  ">
+      <div className="min-h-screen bg-black text-white mx-12">
         {/* Hero Section */}
         <section className="relative w-full py-20 overflow-hidden">
           <h1 className="text-4xl md:text-4xl lg:text-6xl font-semibold max-w-7xl mx-auto text-center mt-6 relative z-20 py-6 bg-clip-text text-white from-neutral-800 via-white to-white">
@@ -21,7 +21,7 @@ export default function AboutPage() {
             <br />
           </h1>
           <p className="text-gray-400 md:text-xl text-center pt-3">
-            Nova Academy is where traditional education meets future innovation. We're not just a college; we're a launchpad for the next generation of pioneers. With cutting-edge technology, AI-driven tools, and a student-first approach, we empower learners to excel in academics, streamline attendance with facial recognition, and engage in dynamic events—all in one seamless platform. At Nova Academy, education isn't just about learning; it's about evolving, innovating, and shaping the future. 🚀
+            Nova Academy is where traditional education meets future innovation. We&apos;re not just a college; we&apos;re a launchpad for the next generation of pioneers. With cutting-edge technology, AI-driven tools, and a student-first approach, we empower learners to excel in academics, streamline attendance with facial recognition, and engage in dynamic events—all in one seamless platform. At Nova Academy, education isn&apos;t just about learning; it&apos;s about evolving, innovating, and shaping the future. 🚀
           </p>
         </section>
 
@@ -40,16 +40,18 @@ export default function AboutPage() {
                   experiences.
                 </p>
               </div>
+
               <div className="flex flex-col space-y-4 border border-gray-200 p-5 rounded-lg">
                 <div className="p-3 rounded-full bg-white/5 w-fit">
                   <Target className="w-6 h-6" />
                 </div>
                 <h2 className="text-2xl font-bold">Our Vision</h2>
                 <p className="text-gray-400">
-                  To be the leading institution in transformative education, where every student's potential is unleashed
+                  To be the leading institution in transformative education, where every student&apos;s potential is unleashed
                   to create positive impact in the world, just as explorers chart new territories in space.
                 </p>
               </div>
+
               <div className="flex flex-col space-y-4 border border-gray-200 p-5 rounded-lg">
                 <div className="p-3 rounded-full bg-white/5 w-fit">
                   <Lightbulb className="w-6 h-6" />
@@ -61,12 +63,9 @@ export default function AboutPage() {
                   as opportunities for growth. Our commitment to technology and student success drives everything we do.
                 </p>
               </div>
-
             </div>
           </div>
         </section>
-
-        {/* Timeline */}
 
         {/* Campus Features */}
         <section className="w-full py-12 md:py-24 border-t border-white/10">
@@ -103,8 +102,8 @@ export default function AboutPage() {
           </div>
         </section>
 
-
         <TracingBeamDemo />
+
         {/* CTA Section */}
         <section className="w-full py-12 md:py-24 border-t border-white/10">
           <div className="px-4 md:px-6">
@@ -113,17 +112,16 @@ export default function AboutPage() {
               <p className="max-w-[600px] text-gray-400 md:text-xl/relaxed">
                 Embark on a journey of discovery and innovation with Nova Academy
               </p>
-              <a href='/EventHeadDashboard'>
+              <Link href="/EventHeadDashboard">
                 <button className="inline-flex h-10 items-center justify-center rounded-md bg-white px-8 text-sm font-medium text-black transition-colors hover:bg-white/90">
                   Create Event
                 </button>
-              </a>
+              </Link>
             </div>
           </div>
         </section>
       </div>
       <Footer />
     </>
-  )
+  );
 }
-
