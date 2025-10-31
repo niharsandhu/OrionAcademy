@@ -10,7 +10,7 @@ import axios from "axios";
 export default function SignupFormDemo() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student"); // Default role
+  const [role, setRole] = useState("student");
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -26,24 +26,27 @@ export default function SignupFormDemo() {
       });
 
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user)); 
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       alert("Login successful!");
 
-      // Redirect based on role
-      if (role === "student") {
-        router.push("/attendance");
-      } else if (role === "teacher") {
-        router.push("/uploadAttendance");
-      }
+      if (role === "student") router.push("/attendance");
+      else if (role === "teacher") router.push("/uploadAttendance");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
   };
 
+  // 🚀 Google OAuth Redirect
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:3001/auth/google";
+  };
+
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-black text-white">
       <h2 className="font-bold text-xl text-neutral-200">Welcome Back</h2>
-      <p className="text-sm max-w-sm mt-2 text-neutral-300">Login to your account</p>
+      <p className="text-sm max-w-sm mt-2 text-neutral-300">
+        Login to your account
+      </p>
       <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-3 h-[1px] w-full" />
 
       <form className="my-8" onSubmit={handleLogin}>
@@ -96,7 +99,27 @@ export default function SignupFormDemo() {
           Sign in &rarr;
           <BottomGradient />
         </button>
-      </form> 
+      </form>
+
+      {/* 🔹 Divider */}
+      <div className="flex items-center my-4">
+        <div className="flex-1 h-px bg-zinc-700"></div>
+        <span className="px-3 text-sm text-zinc-400">OR</span>
+        <div className="flex-1 h-px bg-zinc-700"></div>
+      </div>
+
+      {/* 🔹 Google Login Button */}
+      <button
+        onClick={handleGoogleLogin}
+        className="flex items-center justify-center w-full bg-white text-black py-2 rounded-md hover:bg-gray-200 transition duration-200"
+      >
+        <img
+          src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+          alt="Google Logo"
+          className="w-5 h-5 mr-2"
+        />
+        Continue with Google
+      </button>
     </div>
   );
 }
@@ -109,5 +132,7 @@ const BottomGradient = () => (
 );
 
 const LabelInputContainer = ({ children, className }) => (
-  <div className={cn("flex flex-col space-y-2 w-full", className)}>{children}</div>
+  <div className={cn("flex flex-col space-y-2 w-full", className)}>
+    {children}
+  </div>
 );

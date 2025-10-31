@@ -1,47 +1,71 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import axios from "axios";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import API from "@/lib/api";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("student"); // Default role
+  const [role, setRole] = useState("student");
   const [error, setError] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
 
+  // ✅ Handle Google OAuth callback
+  useEffect(() => {
+    const token = searchParams.get("token");
+    const userRole = searchParams.get("role");
+    const errorParam = searchParams.get("error");
+
+    if (errorParam) {
+      setError("Google login failed: " + errorParam);
+      return;
+    }
+
+    // ✅ If Google login successful
+    if (token && userRole) {
+      localStorage.setItem("token", token);
+      localStorage.setItem("role", userRole);
+
+      if (userRole === "student") router.push("/attendance");
+      else if (userRole === "teacher") router.push("/uploadAttendance");
+    }
+  }, [searchParams, router]);
+
+  // 🧠 Manual Login (normal API)
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:3001/auth/login", {
-        email,
-        password,
-        role,
-      });
-
+      const response = await API.post("/auth/login", { email, password, role });
       localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data.user)); 
-      alert("Login successful!");
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      localStorage.setItem("role", role);
 
-      // Redirect based on role
-      if (role === "student") {
-        router.push("/attendance");
-      } else if (role === "teacher") {
-        router.push("/uploadAttendance");
-      }
+      alert("Login successful!");
+      if (role === "student") router.push("/attendance");
+      else router.push("/uploadAttendance");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
   };
 
+  // 🚀 Google OAuth redirect
+  const handleGoogleLogin = () => {
+    window.location.href = "http://localhost:3001/auth/google";
+  };
+
   return (
     <div className="flex items-center justify-center h-screen bg-black">
       <div className="w-96 p-6 bg-zinc-900 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-white text-center">Login</h2>
+        <h2 className="text-2xl font-semibold text-white text-center">
+          Login
+        </h2>
 
-        {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+        {error && (
+          <p className="text-red-500 text-sm text-center mt-2">{error}</p>
+        )}
 
         <form onSubmit={handleLogin} className="mt-4">
           <div className="mb-4">
@@ -85,13 +109,19 @@ const LoginPage = () => {
             Login
           </button>
         </form>
+
+        {/* 🌐 Google Login Button */}
+        <div className="mt-4 text-center">
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 transition"
+          >
+            Continue with Google
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-const Page = () => {
-  return <LoginPage />;
-};
-
-export default Page;
+export default LoginPage;
