@@ -12,11 +12,33 @@ export default function SignupFormDemo() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("student");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
+
+    // Client-side validation
+    if (!email || !password || !role) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Password length validation
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const response = await axios.post("http://localhost:3001/auth/login", {
@@ -32,14 +54,25 @@ export default function SignupFormDemo() {
       if (role === "student") router.push("/attendance");
       else if (role === "teacher") router.push("/uploadAttendance");
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
+      if (err.response) {
+        setError(err.response?.data?.message || "Invalid credentials");
+      } else if (err.request) {
+        setError("Network error. Please check your connection");
+      } else {
+        setError("Login failed. Please try again");
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   // 🚀 Google OAuth Redirect
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:3001/auth/google";
-  };
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+
+const handleGoogleLogin = () => {
+  window.location.assign(`${BACKEND_URL}/auth/google`);
+};
 
   return (
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-black text-white">
@@ -48,6 +81,14 @@ export default function SignupFormDemo() {
         Login to your account
       </p>
       <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-3 h-[1px] w-full" />
+
+      {/* Error Alert */}
+      {error && (
+        <div className="mb-4 p-3 rounded-md bg-red-500/10 border border-red-500/50 flex items-start gap-2">
+          <span className="text-red-500 text-lg">⚠</span>
+          <p className="text-sm text-red-400">{error}</p>
+        </div>
+      )}
 
       <form className="my-8" onSubmit={handleLogin}>
         <LabelInputContainer className="mb-4">
@@ -58,8 +99,12 @@ export default function SignupFormDemo() {
             placeholder="projectmayhem@fc.com"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setError("");
+            }}
             required
+            disabled={loading}
           />
         </LabelInputContainer>
 
@@ -71,8 +116,12 @@ export default function SignupFormDemo() {
             placeholder="••••••••"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setError("");
+            }}
             required
+            disabled={loading}
           />
         </LabelInputContainer>
 
@@ -82,8 +131,12 @@ export default function SignupFormDemo() {
             name="role"
             id="role"
             value={role}
-            onChange={(e) => setRole(e.target.value)}
+            onChange={(e) => {
+              setRole(e.target.value);
+              setError("");
+            }}
             required
+            disabled={loading}
             className="w-full px-3 py-2 text-sm bg-zinc-900 border border-zinc-700 rounded-md shadow-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 text-white"
           >
             <option value="student">Student</option>
@@ -93,10 +146,11 @@ export default function SignupFormDemo() {
         </LabelInputContainer>
 
         <button
-          className="bg-gradient-to-br relative group/btn from-zinc-900 to-zinc-900 block bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+          className="bg-gradient-to-br relative group/btn from-zinc-900 to-zinc-900 block bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset] disabled:opacity-50 disabled:cursor-not-allowed"
           type="submit"
+          disabled={loading}
         >
-          Sign in &rarr;
+          {loading ? "Signing in..." : "Sign in →"}
           <BottomGradient />
         </button>
       </form>
@@ -111,7 +165,8 @@ export default function SignupFormDemo() {
       {/* 🔹 Google Login Button */}
       <button
         onClick={handleGoogleLogin}
-        className="flex items-center justify-center w-full bg-white text-black py-2 rounded-md hover:bg-gray-200 transition duration-200"
+        disabled={loading}
+        className="flex items-center justify-center w-full bg-white text-black py-2 rounded-md hover:bg-gray-200 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <img
           src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
