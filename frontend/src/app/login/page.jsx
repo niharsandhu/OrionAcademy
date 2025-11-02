@@ -1,9 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import API from "@/lib/api";
 
-const LoginPage = () => {
+const LoginPageContent = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("student");
@@ -22,7 +23,6 @@ const LoginPage = () => {
       return;
     }
 
-    // ✅ If Google login successful
     if (token && userRole) {
       localStorage.setItem("token", token);
       localStorage.setItem("role", userRole);
@@ -32,7 +32,7 @@ const LoginPage = () => {
     }
   }, [searchParams, router]);
 
-  // 🧠 Manual Login (normal API)
+  // 🧠 Manual Login
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -59,13 +59,8 @@ const LoginPage = () => {
   return (
     <div className="flex items-center justify-center h-screen bg-black">
       <div className="w-96 p-6 bg-zinc-900 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold text-white text-center">
-          Login
-        </h2>
-
-        {error && (
-          <p className="text-red-500 text-sm text-center mt-2">{error}</p>
-        )}
+        <h2 className="text-2xl font-semibold text-white text-center">Login</h2>
+        {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
 
         <form onSubmit={handleLogin} className="mt-4">
           <div className="mb-4">
@@ -110,7 +105,6 @@ const LoginPage = () => {
           </button>
         </form>
 
-        {/* 🌐 Google Login Button */}
         <div className="mt-4 text-center">
           <button
             onClick={handleGoogleLogin}
@@ -123,5 +117,12 @@ const LoginPage = () => {
     </div>
   );
 };
+
+// ✅ Wrap LoginPageContent inside Suspense
+const LoginPage = () => (
+  <Suspense fallback={<div className="text-white text-center mt-20">Loading...</div>}>
+    <LoginPageContent />
+  </Suspense>
+);
 
 export default LoginPage;
